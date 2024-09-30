@@ -10,31 +10,41 @@ import {
 
 const SOCIAL_LINKS = [
   {
-    href: "whatsapp://send?text=Check%20out%20this%20python%20minifier!!%20https://glad432.github.io/",
+    href: `whatsapp://send?text=${encodeURIComponent(
+      "Check out this python minifier!! https://glad432.github.io/"
+    )}`,
     icon: faWhatsapp,
     color: "text-green-500",
     title: "Share on WhatsApp",
   },
   {
-    href: "https://telegram.me/share/url?url=https://glad432.github.io/&amp;text=Check%20out%20this%20python%20minifier!!",
+    href: `https://telegram.me/share/url?url=${encodeURIComponent(
+      "https://glad432.github.io/"
+    )}&text=${encodeURIComponent("Check out this python minifier!!")}`,
     icon: faTelegramPlane,
     color: "text-blue-500",
     title: "Share on Telegram",
   },
   {
-    href: "https://www.facebook.com/sharer/sharer.php?u=https://glad432.github.io/",
+    href: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
+      "https://glad432.github.io/"
+    )}`,
     icon: faFacebook,
     color: "text-blue-700",
     title: "Share on Facebook",
   },
   {
-    href: "https://x.com/intent/post?url=https://glad432.github.io/&amp;text=Check%20out%20this%20python%20minifier!!",
+    href: `https://x.com/intent/post?url=${encodeURIComponent(
+      "https://glad432.github.io/"
+    )}&text=${encodeURIComponent("Check out this python minifier!!")}`,
     icon: faXTwitter,
     color: "text-slate-600",
     title: "Share on X",
   },
   {
-    href: "https://www.reddit.com/submit?url=https://glad432.github.io/&amp;title=Check%20out%20this%20python%20minifier!!",
+    href: `https://www.reddit.com/submit?url=${encodeURIComponent(
+      "https://glad432.github.io/"
+    )}&title=${encodeURIComponent("Check out this python minifier!!")}`,
     icon: faReddit,
     color: "text-red-500",
     title: "Share on Reddit",
@@ -55,7 +65,7 @@ const SocialShare = () => (
             key={title}
             href={href}
             target="_blank"
-            rel="noreferrer"
+            rel="noopener noreferrer"
             className={`icon-link mx-2 my-2 ${color}`}
             title={title}
           >

@@ -4,7 +4,7 @@ import { createHtmlPlugin } from 'vite-plugin-html'
 import { terser } from 'rollup-plugin-terser'
 
 export default defineConfig({
-  base: '/',
+  base: 'https://glad432.github.io/vite/',
   plugins: [
     react(),
     createHtmlPlugin({

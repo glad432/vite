@@ -21,9 +21,9 @@ const socialLinks = [
   },
 ];
 
-const Footer = () => {
-  const currentYear = new Date().getFullYear();
+const currentYear = new Date().getFullYear();
 
+const Footer = () => {
   return (
     <footer className="bg-black text-xs md:text-sm text-center text-white">
       <div className="pt-9 mb-9 flex justify-center space-x-9">

@@ -3,17 +3,14 @@ import Editor from "@monaco-editor/react";
 
 const EditableEditor = ({ content, onContentChange, darkMode }) => {
   const [deviceType, setDeviceType] = useState("");
+  const [linesCount, setLinesCount] = useState(0);
+  const [kbCount, setKbCount] = useState(0);
+  const editorRef = useRef(null);
 
   useEffect(() => {
     const handleResize = () => {
       const width = window.innerWidth;
-      if (width > 1024) {
-        setDeviceType("pc");
-      } else if (width > 768) {
-        setDeviceType("tablet");
-      } else {
-        setDeviceType("mobile");
-      }
+      setDeviceType(width > 1024 ? "pc" : width > 768 ? "tablet" : "mobile");
     };
 
     handleResize();
@@ -28,35 +25,23 @@ const EditableEditor = ({ content, onContentChange, darkMode }) => {
     mobile: 12,
   };
 
-  const [linesCount, setLinesCount] = useState(0);
-  const [kbCount, setKbCount] = useState(0);
-  const editorRef = useRef(null);
-
-  const updateLinesCount = () => {
+  const updateCounts = useCallback(() => {
     if (editorRef.current) {
       const lineCount = editorRef.current.getModel().getLineCount();
       setLinesCount(lineCount);
     }
-  };
-
-  const updateKbCount = useCallback(() => {
     const kbSize = (content.length / 1024).toFixed(3);
     setKbCount(kbSize);
   }, [content]);
 
   useEffect(() => {
-    updateLinesCount();
-    updateKbCount();
-  }, [content, updateKbCount]);
+    updateCounts();
+  }, [content, updateCounts]);
 
   const handleEditorDidMount = (editor) => {
     editorRef.current = editor;
-    updateLinesCount();
-    updateKbCount();
-    editorRef.current.onDidChangeModelContent(() => {
-      updateLinesCount();
-      updateKbCount();
-    });
+    updateCounts();
+    editorRef.current.onDidChangeModelContent(updateCounts);
   };
 
   return (

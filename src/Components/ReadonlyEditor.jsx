@@ -46,11 +46,12 @@ const ReadonlyEditor = ({ content, darkMode, hasContent }) => {
   };
 
   const options = [
-    "combine_imports",
+    "remove_annotations",
     "remove_pass",
     "remove_literal_statements",
-    "remove_annotations",
+    "combine_imports",
     "hoist_literals",
+    "remove_object_base",
     "rename_locals",
     "rename_globals",
     "convert_posargs_to_args",
@@ -58,7 +59,10 @@ const ReadonlyEditor = ({ content, darkMode, hasContent }) => {
     "remove_asserts",
     "remove_debug",
     "remove_explicit_return_none",
+    "remove_builtin_exception_brackets",
+    "constant_folding",
   ];
+
   const toggleContent = () => {
     setContentHeight(
       contentHeight
@@ -100,40 +104,51 @@ const ReadonlyEditor = ({ content, darkMode, hasContent }) => {
     options.forEach((option) => {
       document.getElementById(option).checked = false;
     });
-    document.getElementById("preserveLocals").value = "";
-    document.getElementById("preserveGlobals").value = "";
+    document.getElementById("preserve_locals").value = "";
+    document.getElementById("preserve_globals").value = "";
   };
 
   const buildQuery = () => {
-    var query = options
-      .map((option) => {
-        var checkbox = document.getElementById(option);
-        if (checkbox && checkbox.checked) {
-          return `${option}=true`;
-        } else {
-          return `${option}=false`;
-        }
-      })
-      .join("&");
-    const preserveGlobalsInput = document.getElementById("preserveGlobals");
-    const preserveGlobals = preserveGlobalsInput
-      ? preserveGlobalsInput.value.split(",").map((str) => str.trim())
-      : [];
-    if (preserveGlobals.length > 0) {
-      query += `&preserve_globals=${encodeURIComponent(
-        JSON.stringify(preserveGlobals)
-      )}`;
+    const preserveGlobals = document.getElementById("preserve_globals");
+    const preserveLocals = document.getElementById("preserve_locals");
+
+    const processPreserveInput = (inputElement) => {
+      if (inputElement) {
+        return inputElement.value
+          .replace(/\s*,\s*|\s+/g, ",")
+          .split(",")
+          .map((str) => str.trim())
+          .filter(Boolean);
+      }
+      return [];
+    };
+
+    const queryParts = options.map((option) => {
+      const checkbox = document.getElementById(option);
+      return checkbox && checkbox.checked
+        ? `${option}=true`
+        : `${option}=false`;
+    });
+
+    const preserveGlobalsFinal = processPreserveInput(preserveGlobals);
+    if (preserveGlobalsFinal.length > 0) {
+      queryParts.push(
+        `preserve_globals=${encodeURIComponent(
+          JSON.stringify(preserveGlobalsFinal)
+        )}`
+      );
     }
-    const preserveLocalsInput = document.getElementById("preserveLocals");
-    const preserveLocals = preserveLocalsInput
-      ? preserveLocalsInput.value.split(",").map((str) => str.trim())
-      : [];
-    if (preserveLocals.length > 0) {
-      query += `&preserve_locals=${encodeURIComponent(
-        JSON.stringify(preserveLocals)
-      )}`;
+
+    const preserveLocalsFinal = processPreserveInput(preserveLocals);
+    if (preserveLocalsFinal.length > 0) {
+      queryParts.push(
+        `preserve_locals=${encodeURIComponent(
+          JSON.stringify(preserveLocalsFinal)
+        )}`
+      );
     }
-    return query;
+
+    return queryParts.join("&");
   };
 
   const updateLinesCount = () => {
@@ -229,20 +244,20 @@ const ReadonlyEditor = ({ content, darkMode, hasContent }) => {
       <div className="text-left w-[500px] my-10 p-4 rounded border-t-[5px] border-solid border-blue-500 blue_big_box md:mx-auto md:p-8">
         <p
           id="toggleContent1"
-          className="cursor-pointer underline underline-offset-3 decoration-8 decoration-blue-600 mb-4 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl"
+          className="cursor-pointer underline underline-offset-3 decoration-8 decoration-blue-600 mb-4 text-4xl font-extrabold leading-none tracking-tight text-gray-900 pb-4 md:text-5xl lg:text-6xl"
           onClick={toggleContent}
         >
           Options:
         </p>
         <div
-          className="relative overflow-hidden content-ll [transition:max-height_0.6s_ease-in-out] pt-4"
+          className="relative overflow-hidden content-ll [transition:max-height_0.6s_ease-in-out]"
           style={{ maxHeight: contentHeight }}
         >
           <div id="optionsContainer">{createOptionsCheckboxes()}</div>
           <div className="relative mb-3">
             <input
               type="text"
-              id="preserveLocals"
+              id="preserve_locals"
               className="block rounded-lg px-2.5 pb-2.5 pt-5 w-full text-sm text-gray-900 bg-gray-50 border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer"
               placeholder=" "
               spellCheck="false"
@@ -250,7 +265,7 @@ const ReadonlyEditor = ({ content, darkMode, hasContent }) => {
               onChange={(e) => setPreserveLocals(e.target.value)}
             />
             <label
-              htmlFor="preserveLocals"
+              htmlFor="preserve_locals"
               className="absolute cursor-text font-bold text-gray-500 duration-300 transform -translate-y-4 scale-75 top-4 z-10 origin-[0] start-2.5 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto"
             >
               Preserved Locals:
@@ -259,7 +274,7 @@ const ReadonlyEditor = ({ content, darkMode, hasContent }) => {
           <div className="relative mb-2">
             <input
               type="text"
-              id="preserveGlobals"
+              id="preserve_globals"
               className="block rounded-lg px-2.5 pb-2.5 pt-5 w-full text-sm text-gray-900 bg-gray-50 border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer"
               placeholder=" "
               spellCheck="false"
@@ -267,15 +282,12 @@ const ReadonlyEditor = ({ content, darkMode, hasContent }) => {
               onChange={(e) => setPreserveGlobals(e.target.value)}
             />
             <label
-              htmlFor="preserveGlobals"
+              htmlFor="preserve_globals"
               className="absolute cursor-text font-bold text-gray-500 duration-300 transform -translate-y-4 scale-75 top-4 z-10 origin-[0] start-2.5 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto"
             >
               Preserved Globals:
             </label>
           </div>
-          <p className="text-sm mb-2 text-neutral-500">
-            <span className="text-red-500 font-bold">*</span> Delimiter is comma
-          </p>
           <a
             className="text-blue-500 text-base hover:underline hover:text-blue-600"
             href="https://dflook.github.io/python-minifier/transforms"

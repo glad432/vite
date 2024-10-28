@@ -15,21 +15,17 @@ const TypewriterComponent = () => {
   const typewriterRef = useRef(null);
 
   useEffect(() => {
-    const shuffledFeatures = [...FEATURES];
-    shuffleArray(shuffledFeatures);
-
+    const shuffledFeatures = shuffleArray([...FEATURES]);
     const typewriter = new Typewriter(typewriterRef.current, {
       loop: true,
       delay: 50,
     });
 
-    shuffledFeatures.forEach((feature) => {
+    shuffledFeatures.forEach(({ text, color }) => {
       typewriter
         .pauseFor(1000)
         .deleteAll()
-        .typeString(
-          `<span style="color: ${feature.color}">${feature.text}</span>`
-        )
+        .typeString(`<span style="color: ${color}">${text}</span>`)
         .pauseFor(1000);
     });
 
@@ -43,10 +39,11 @@ const TypewriterComponent = () => {
       const j = Math.floor(Math.random() * (i + 1));
       [array[i], array[j]] = [array[j], array[i]];
     }
+    return array;
   };
 
   return (
-    <div className="rounded p-5 mb-5 border-2 text-center border-solid simp_border">
+    <div className="rounded p-5 mb-5 border-2 border-solid simp_border text-center">
       <h1 className="mb-4 text-3xl font-extrabold text-white md:text-5xl lg:text-6xl">
         <span className="cursor-default text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 via-blue-400 to-blue-400">
           Python Minifier

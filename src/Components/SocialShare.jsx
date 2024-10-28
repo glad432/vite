@@ -52,7 +52,7 @@ const SOCIAL_LINKS = [
 ];
 
 const SocialShare = () => (
-  <div className="flex justify-center items-center pb-[25px]">
+  <div className="flex justify-center items-center pb-6">
     <div className="bg-white rounded-lg shadow-lg p-6 flex flex-col md:flex-row md:items-center">
       <div className="mb-6 md:mb-0 md:mr-6">
         <p className="font-extrabold font-['Source_Code_Pro'] text-center tracking-wide uppercase">

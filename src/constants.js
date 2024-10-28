@@ -1,15 +1,19 @@
 export const READONLY_EDITOR_OPTIONS = [
-    "combine_imports",
-    "remove_pass",
-    "remove_literal_statements",
-    "remove_annotations",
-    "hoist_literals",
-    "rename_locals",
-    "rename_globals",
-    "convert_posargs_to_args",
-    "preserve_shebang",
-    "remove_asserts",
-    "remove_debug",
-    "remove_explicit_return_none",
-  ];
-  
+	'combine_imports',
+	'constant_folding',
+	'convert_posargs_to_args',
+	'hoist_literals',
+	'preserve_globals',
+	'preserve_locals',
+	'preserve_shebang',
+	'remove_annotations',
+	'remove_asserts',
+	'remove_builtin_exception_brackets',
+	'remove_debug',
+	'remove_explicit_return_none',
+	'remove_literal_statements',
+	'remove_object_base',
+	'remove_pass',
+	'rename_globals',
+	'rename_locals'
+];
